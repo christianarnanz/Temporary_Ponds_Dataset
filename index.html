@@ -7,7 +7,6 @@
   <link 
     rel="stylesheet" 
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""
   />
   <style>
@@ -18,37 +17,35 @@
 
 <div id="map"></div>
 
-<script 
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha512-sA+z0p9M7U4hTgH3oySfhM79Hz7v3oT4hP8A7nM/yTq0g5i0oRej0W8Mu1qFsX0xZ9FIMW+7m2YpV1g=="
-  crossorigin="">
-</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
 
 <script>
-  // Crear mapa centrado en la Península Ibérica
+  // Crear mapa en coordenadas geográficas
   const map = L.map('map').setView([40.4, -3.7], 7);
 
   // Capa base: Ortofoto PNOA
-const ortofoto = L.tileLayer.wms("https://www.ign.es/wms-inspire/pnoa-ma", {
-  layers: "OI.OrthoimageCoverage",
-  format: "image/png",
-  transparent: false,
-  version: "1.3.0",
-  attribution: "© Instituto Geográfico Nacional (IGN) - PNOA"
-}).addTo(map);
+  const ortofoto = L.tileLayer.wms("https://www.ign.es/wms-inspire/pnoa-ma", {
+    layers: "OI.OrthoimageCoverage",
+    format: "image/jpeg",
+    transparent: false,
+    version: "1.3.0",
+    crs: L.CRS.EPSG3857,
+    attribution: "© Instituto Geográfico Nacional (IGN) - PNOA"
+  }).addTo(map);
 
-  // Cargar tu archivo KML desde GitHub Pages
+  // Cargar el archivo KML
   const kmlLayer = omnivore.kml('temporary_ponds_database_V2_05_11.kml')
     .on('ready', function() {
       map.fitBounds(kmlLayer.getBounds());
+      console.log("KML cargado correctamente");
     })
     .on('error', function(e) {
       console.error("Error al cargar el KML:", e.error);
     })
     .addTo(map);
 
-  // Popups con atributos
+  // Popups con atributos (si los hay)
   kmlLayer.on('click', function(e) {
     const props = e.layer.feature?.properties;
     if (props) {
