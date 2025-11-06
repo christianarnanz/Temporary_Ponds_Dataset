@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Temporary Ponds Database - Visor rápido con buscador</title>
+  <title>Temporary Ponds Database - Visor con buscador y clustering</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -19,22 +19,45 @@
       z-index: 1000;
       background: white;
       padding: 5px 10px;
-      border-radius: 6px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       font-family: sans-serif;
+      width: 250px;
     }
     #search-input {
-      width: 200px;
+      width: 100%;
       border: none;
       outline: none;
+      font-size: 14px;
+    }
+    #suggestions {
+      position: absolute;
+      top: 35px;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    }
+    .suggestion {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .suggestion:hover {
+      background: #eee;
     }
   </style>
 </head>
 <body>
 
 <div id="map"></div>
+
 <div id="search-box">
-  🔍 <input type="text" id="search-input" placeholder="Buscar por nombre...">
+  <input type="text" id="search-input" placeholder="Buscar por nombre...">
+  <div id="suggestions"></div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -52,9 +75,13 @@
     attribution: "© Instituto Geográfico Nacional (IGN) - PNOA"
   }).addTo(map);
 
-  const markers = L.markerClusterGroup();
+  const markers = L.markerClusterGroup({ 
+    disableClusteringAtZoom: 12,
+    chunkedLoading: true,  // mejora rendimiento
+  });
   const markerList = [];
 
+  // Cargar KML
   const kmlLayer = omnivore.kml('temporary_ponds_database_V2_05_11.kml')
     .on('ready', function() {
       console.log("✅ KML cargado correctamente");
@@ -72,7 +99,7 @@
           popupContent += "</ul>";
           marker.bindPopup(popupContent);
 
-          markerList.push({ name: name.toLowerCase(), marker: marker });
+          markerList.push({ name: name, nameLower: name.toLowerCase(), marker });
           markers.addLayer(marker);
         }
       });
@@ -80,27 +107,51 @@
       map.addLayer(markers);
       map.fitBounds(markers.getBounds());
     })
-    .on('error', function(e) {
-      console.error("❌ Error al cargar el KML:", e.error);
+    .on('error', e => console.error("❌ Error al cargar el KML:", e.error));
+
+  // --- 🔍 BUSCADOR CON AUTOCOMPLETADO ---
+  const input = document.getElementById('search-input');
+  const suggestions = document.getElementById('suggestions');
+
+  input.addEventListener('input', function() {
+    const query = this.value.trim().toLowerCase();
+    suggestions.innerHTML = '';
+    if (!query) {
+      suggestions.style.display = 'none';
+      return;
+    }
+
+    const matches = markerList
+      .filter(item => item.nameLower.includes(query))
+      .slice(0, 20); // máximo 20 sugerencias
+
+    if (matches.length === 0) {
+      suggestions.style.display = 'none';
+      return;
+    }
+
+    matches.forEach(match => {
+      const div = document.createElement('div');
+      div.className = 'suggestion';
+      div.textContent = match.name;
+      div.addEventListener('click', () => {
+        map.setView(match.marker.getLatLng(), 14);
+        match.marker.openPopup();
+        suggestions.style.display = 'none';
+        input.value = match.name;
+      });
+      suggestions.appendChild(div);
     });
 
-  // Buscador nativo
-  document.getElementById('search-input').addEventListener('keyup', function(e) {
-    if (e.key === 'Enter') {
-      const query = this.value.trim().toLowerCase();
-      if (!query) return;
+    suggestions.style.display = 'block';
+  });
 
-      const result = markerList.find(item => item.name.includes(query));
-      if (result) {
-        map.setView(result.marker.getLatLng(), 14);
-        result.marker.openPopup();
-      } else {
-        alert('No se encontró ningún punto con ese nombre.');
-      }
+  document.addEventListener('click', (e) => {
+    if (!document.getElementById('search-box').contains(e.target)) {
+      suggestions.style.display = 'none';
     }
   });
 </script>
 
 </body>
 </html>
-
