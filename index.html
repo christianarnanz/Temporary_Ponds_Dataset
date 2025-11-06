@@ -9,10 +9,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
-
-  <!-- 🔍 Librería de búsqueda (versión segura cdnjs) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.9/leaflet-search.min.css"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.9/leaflet-search.min.js"></script>
 
   <style>
     html, body, #map { height: 100%; margin: 0; padding: 0; }
@@ -28,10 +25,13 @@
 
 <div id="map"></div>
 
-<!-- Librerías principales -->
+<!-- ✅ Cargar primero Leaflet y sus dependencias -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<!-- ✅ Luego cargar el buscador -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/3.0.9/leaflet-search.min.js"></script>
 
 <script>
   // Crear mapa base
@@ -59,7 +59,6 @@
           const props = layer.feature?.properties;
           const name = props?.name || "Sin nombre";
 
-          // Crear marcador
           const marker = L.marker(layer.getLatLng());
           let popupContent = `<h4>${name}</h4><ul>`;
           for (let key in props) {
@@ -68,9 +67,7 @@
           popupContent += "</ul>";
           marker.bindPopup(popupContent);
 
-          // Guardar el nombre dentro del marcador (para búsqueda)
           marker.feature = { properties: { name: name } };
-
           markers.addLayer(marker);
           searchLayer.addLayer(marker);
         }
