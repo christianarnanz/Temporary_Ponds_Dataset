@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Temporary Ponds Database - Visor con buscador y clustering</title>
+  <title>Temporary Ponds Database - Visor con buscador autocompletar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -18,11 +18,11 @@
       transform: translateX(-50%);
       z-index: 1000;
       background: white;
-      padding: 5px 10px;
+      padding: 6px 10px;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       font-family: sans-serif;
-      width: 250px;
+      width: 260px;
     }
     #search-input {
       width: 100%;
@@ -32,22 +32,23 @@
     }
     #suggestions {
       position: absolute;
-      top: 35px;
-      left: 0;
-      right: 0;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 260px;
       background: white;
       border-radius: 0 0 8px 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      max-height: 200px;
-      overflow-y: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
       display: none;
+      max-height: 150px;
+      overflow-y: auto;
     }
     .suggestion {
-      padding: 5px 10px;
+      padding: 6px 10px;
       cursor: pointer;
     }
     .suggestion:hover {
-      background: #eee;
+      background: #f0f0f0;
     }
   </style>
 </head>
@@ -57,8 +58,8 @@
 
 <div id="search-box">
   <input type="text" id="search-input" placeholder="Buscar por nombre...">
-  <div id="suggestions"></div>
 </div>
+<div id="suggestions"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
@@ -77,11 +78,11 @@
 
   const markers = L.markerClusterGroup({ 
     disableClusteringAtZoom: 12,
-    chunkedLoading: true,  // mejora rendimiento
+    chunkedLoading: true,
   });
   const markerList = [];
 
-  // Cargar KML
+  // --- CARGAR KML ---
   const kmlLayer = omnivore.kml('temporary_ponds_database_V2_05_11.kml')
     .on('ready', function() {
       console.log("✅ KML cargado correctamente");
@@ -89,7 +90,7 @@
       kmlLayer.eachLayer(function(layer) {
         if (layer.getLatLng) {
           const props = layer.feature?.properties;
-          const name = props?.name || "Sin nombre";
+          const name = props?.name?.trim() || "Sin nombre";
 
           const marker = L.marker(layer.getLatLng());
           let popupContent = `<h4>${name}</h4><ul>`;
@@ -99,7 +100,7 @@
           popupContent += "</ul>";
           marker.bindPopup(popupContent);
 
-          markerList.push({ name: name, nameLower: name.toLowerCase(), marker });
+          markerList.push({ name, nameLower: name.toLowerCase(), marker });
           markers.addLayer(marker);
         }
       });
@@ -109,7 +110,7 @@
     })
     .on('error', e => console.error("❌ Error al cargar el KML:", e.error));
 
-  // --- 🔍 BUSCADOR CON AUTOCOMPLETADO ---
+  // --- 🔍 AUTOCOMPLETADO ---
   const input = document.getElementById('search-input');
   const suggestions = document.getElementById('suggestions');
 
@@ -123,7 +124,7 @@
 
     const matches = markerList
       .filter(item => item.nameLower.includes(query))
-      .slice(0, 20); // máximo 20 sugerencias
+      .slice(0, 5); // máximo 5 sugerencias
 
     if (matches.length === 0) {
       suggestions.style.display = 'none';
@@ -146,8 +147,9 @@
     suggestions.style.display = 'block';
   });
 
+  // Ocultar sugerencias al hacer clic fuera
   document.addEventListener('click', (e) => {
-    if (!document.getElementById('search-box').contains(e.target)) {
+    if (!document.getElementById('search-box').contains(e.target) && !suggestions.contains(e.target)) {
       suggestions.style.display = 'none';
     }
   });
