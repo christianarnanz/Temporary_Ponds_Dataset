@@ -2,41 +2,46 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Temporary Ponds Database - Visor con buscador</title>
+  <title>Temporary Ponds Database - Visor rápido con buscador</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Leaflet + clustering -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
 
-  <!-- Buscador -->
-  <link rel="stylesheet" href="https://rawcdn.githack.com/stefanocudini/leaflet-search/master/src/leaflet-search.css"/>
-
   <style>
     html, body, #map { height: 100%; margin: 0; padding: 0; }
-    .leaflet-control-container .leaflet-control-search {
-      top: 10px !important;
-      right: 10px !important;
-      position: absolute !important;
-      z-index: 9999;
+    #search-box {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 5px 10px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+      font-family: sans-serif;
+    }
+    #search-input {
+      width: 200px;
+      border: none;
+      outline: none;
     }
   </style>
 </head>
 <body>
 
 <div id="map"></div>
+<div id="search-box">
+  🔍 <input type="text" id="search-input" placeholder="Buscar por nombre...">
+</div>
 
-<!-- Scripts principales -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
 
-<!-- Buscador desde fuente directa -->
-<script src="https://rawcdn.githack.com/stefanocudini/leaflet-search/master/src/leaflet-search.js"></script>
-
 <script>
-  // Crear mapa base
   const map = L.map('map').setView([40.4, -3.7], 7);
 
   // Ortofoto PNOA
@@ -48,7 +53,7 @@
   }).addTo(map);
 
   const markers = L.markerClusterGroup();
-  const searchLayer = L.layerGroup();
+  const markerList = [];
 
   const kmlLayer = omnivore.kml('temporary_ponds_database_V2_05_11.kml')
     .on('ready', function() {
@@ -67,36 +72,35 @@
           popupContent += "</ul>";
           marker.bindPopup(popupContent);
 
-          marker.feature = { properties: { name: name } };
+          markerList.push({ name: name.toLowerCase(), marker: marker });
           markers.addLayer(marker);
-          searchLayer.addLayer(marker);
         }
       });
 
       map.addLayer(markers);
       map.fitBounds(markers.getBounds());
-
-      // ✅ Buscador que sí funciona
-      const searchControl = new L.Control.Search({
-        layer: searchLayer,
-        propertyName: 'name',
-        textPlaceholder: 'Buscar por nombre...',
-        marker: false,
-        moveToLocation: function(latlng, title, map) {
-          map.setView(latlng, 14);
-        }
-      });
-
-      searchControl.on('search:locationfound', function(e) {
-        e.layer.openPopup();
-      });
-
-      map.addControl(searchControl);
     })
     .on('error', function(e) {
       console.error("❌ Error al cargar el KML:", e.error);
     });
+
+  // Buscador nativo
+  document.getElementById('search-input').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') {
+      const query = this.value.trim().toLowerCase();
+      if (!query) return;
+
+      const result = markerList.find(item => item.name.includes(query));
+      if (result) {
+        map.setView(result.marker.getLatLng(), 14);
+        result.marker.openPopup();
+      } else {
+        alert('No se encontró ningún punto con ese nombre.');
+      }
+    }
+  });
 </script>
 
 </body>
 </html>
+
