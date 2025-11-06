@@ -5,11 +5,13 @@
   <title>Temporary Ponds Database - Visor con buscador</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Estilos Leaflet -->
+  <!-- Leaflet + clustering -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/2.9.8/leaflet-search.min.css"/>
+
+  <!-- Buscador -->
+  <link rel="stylesheet" href="https://rawcdn.githack.com/stefanocudini/leaflet-search/master/src/leaflet-search.css"/>
 
   <style>
     html, body, #map { height: 100%; margin: 0; padding: 0; }
@@ -25,13 +27,13 @@
 
 <div id="map"></div>
 
-<!-- Scripts: Leaflet primero -->
+<!-- Scripts principales -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
 
-<!-- Buscador: usar cdnjs y versión confirmada -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/2.9.8/leaflet-search.min.js"></script>
+<!-- Buscador desde fuente directa -->
+<script src="https://rawcdn.githack.com/stefanocudini/leaflet-search/master/src/leaflet-search.js"></script>
 
 <script>
   // Crear mapa base
@@ -45,11 +47,9 @@
     attribution: "© Instituto Geográfico Nacional (IGN) - PNOA"
   }).addTo(map);
 
-  // Clústeres y capa de búsqueda
   const markers = L.markerClusterGroup();
   const searchLayer = L.layerGroup();
 
-  // Cargar KML
   const kmlLayer = omnivore.kml('temporary_ponds_database_V2_05_11.kml')
     .on('ready', function() {
       console.log("✅ KML cargado correctamente");
@@ -76,7 +76,7 @@
       map.addLayer(markers);
       map.fitBounds(markers.getBounds());
 
-      // ✅ Añadir buscador correctamente
+      // ✅ Buscador que sí funciona
       const searchControl = new L.Control.Search({
         layer: searchLayer,
         propertyName: 'name',
