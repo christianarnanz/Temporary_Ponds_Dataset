@@ -176,6 +176,12 @@
     minZoom: 5,
     maxZoom: 19
   }).setView([40.4, -3.7], 7);
+// --- 📏 ESCALA MÉTRICA ---
+L.control.scale({
+  metric: true,    // muestra metros/kilómetros
+  imperial: false, // desactiva millas/pies
+  position: 'bottomleft' // puedes cambiar a 'bottomright' si prefieres
+}).addTo(map);
 
   const ortofotoIGN = L.tileLayer(
     "https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
