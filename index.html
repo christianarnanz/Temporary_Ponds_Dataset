@@ -1,212 +1,139 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <title>Temporary Ponds Database - Visor</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<title>Temporary Ponds Database - Visor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Leaflet y complementos -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+<!-- Leaflet y complementos -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
 
-  <style>
-  html, body, #map {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-  }
-/* Mover el control de capas hacia abajo para que no quede tras la cabecera */
-.leaflet-top.leaflet-right {
-    margin-top: 110px;  /* Ajusta este valor si quieres más o menos separación */
+<style>
+html, body, #map {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
 }
-  /* --- CABECERA SUPERIOR --- */
-  #header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 24px;
-    box-sizing: border-box;
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(4px);
-    z-index: 1200;
-  }
 
-  #header img {
-    height: 64px;
-    width: auto;
-    border: none;
-  }
+/* --- CABECERA --- */
+#header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(4px);
+  z-index: 1200;
+  flex-wrap: wrap;
+}
 
-  #header h1 {
-    margin: 0 16px;
-    font-size: 24px;
-    font-weight: 700;
-    color: #2c3e50;
-    text-align: center;
-    flex-grow: 1;
-    text-shadow: 0 1px 2px rgba(255,255,255,0.7);
-    white-space: nowrap;
-  }
+#header img { height: 64px; width: auto; border: none; }
+#header h1 {
+  margin: 0 16px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+  flex-grow: 1;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+  white-space: nowrap;
+}
 
-  /* --- BUSCADORES --- */
-  #search-box, #location-box {
-    display: flex;
-    align-items: center;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-    padding: 4px 10px;
-    width: 360px;
-    max-width: none;
-  }
+/* --- BUSCADORES --- */
+#search-box, #location-box {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  padding: 4px 10px;
+  width: 360px;
+  max-width: 90%;
+  margin-top: 6px;
+  z-index: 1200;
+}
 
-  #search-box {
-    margin-bottom: 6px;
-  }
+#search-input, #location-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  height: 28px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 10px;
+}
 
-  #search-input, #location-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 14px;
-      padding: 0 10px; /* padding interno */
-  box-sizing: border-box; /* incluye padding en el ancho */
-  }
+/* --- SUGERENCIAS --- */
+#suggestions, #location-suggestions {
+  position: absolute;
+  right: 24px;
+  width: 260px;
+  background: white;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  display: none;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 1300;
+}
 
-  #suggestions, #location-suggestions {
-    position: absolute;
-    right: 24px;
-    width: 260px;
-    background: white;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    display: none;
-    max-height: 150px;
-    overflow-y: auto;
-    z-index: 1100;
-  }
+#suggestions { top: 70px; }
+#location-suggestions { top: 120px; }
 
-  #suggestions {
-    top: 70px;
-  }
+.suggestion { padding: 6px 10px; cursor: pointer; }
+.suggestion:hover { background: #f0f0f0; }
 
-  #location-suggestions {
-    top: 120px;
-  }
+/* --- MAPA --- */
+#map {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
 
-  .suggestion {
-    padding: 6px 10px;
-    cursor: pointer;
-  }
-
-  .suggestion:hover {
-    background: #f0f0f0;
-  }
+/* CONTROLES LEAFLET - escritorio */
+.leaflet-top.leaflet-left, .leaflet-top.leaflet-right { z-index: 1100; }
 
 /* --- ADAPTACIÓN A MÓVIL --- */
 @media (max-width: 800px) {
 
-  /* HEADER */
   #header {
-    display: flex;
     flex-direction: column;
     align-items: center;
     padding: 8px;
   }
+  #header img { height: 56px; margin-bottom: 6px; }
+  #header h1 { font-size: 18px; margin: 4px 0; white-space: normal; }
 
-  #header img {
-    height: 56px;
-    margin-bottom: 6px;
-  }
+  #search-box, #location-box { width: 90%; }
 
-  #header h1 {
-    font-size: 18px;
-    text-align: center;
-    margin: 4px 0;
-    white-space: normal;
-  }
+  #suggestions { top: 120px; right: 5%; width: 90%; }
+  #location-suggestions { top: 180px; right: 5%; width: 90%; }
 
-  /* BUSCADORES */
-  #search-box,
-  #location-box {
-    width: 90%;
-    margin-top: 6px;
-    padding: 4px 10px;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-    display: flex;
-    align-items: center;
-    background: white;
-    z-index: 1200; /* encima del mapa */
-  }
+  /* Ajustar mapa */
+  #map { margin-top: 200px; height: calc(100vh - 200px); }
 
-  #search-input,
-  #location-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    height: 28px;
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0 10px;
-  }
-
-  /* SUGERENCIAS */
-  #suggestions,
-  #location-suggestions {
-    position: absolute;
-    right: 5%;
-    width: 90%;
-    background: white;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    display: none;
-    max-height: 150px;
-    overflow-y: auto;
-    z-index: 1300; /* encima de todo */
-  }
-
-  #suggestions { top: 120px; }
-  #location-suggestions { top: 180px; }
-
-  /* MAPA */
-  #map {
-    margin-top: 200px; /* espacio para header + buscadores */
-    height: calc(100vh - 200px);
-  }
-
-  /* CONTROLES DE LEAFLET */
-  /* Zoom (+/-) */
-  .leaflet-top.leaflet-left {
-    top: 200px;
-    z-index: 1100;
-  }
-
-  /* Selector de capas (toggle) */
-  .leaflet-top.leaflet-right {
-    top: 200px;
-    z-index: 1100;
-  }
-
-  /* Alinear el toggle del selector de capas exactamente con el zoom */
-  .leaflet-control-layers {
-    margin-top: 0 !important;
-  }
-
-  .leaflet-control-layers-toggle {
-    margin-top: 0 !important;
-    top: 0 !important;
-  }
+  /* Controles de Leaflet alineados con header + buscadores */
+  .leaflet-top.leaflet-left, .leaflet-top.leaflet-right { top: 200px; }
+  .leaflet-control-layers { margin-top: 0 !important; }
+  .leaflet-control-layers-toggle { margin-top: 0 !important; top: 0 !important; }
 }
+</style>
+</head>
+<body>
 
-<!-- 🔹 CABECERA -->
+<div id="map"></div>
+
+<!-- CABECERA -->
 <div id="header">
   <img src="logo.png" alt="Temporary Ponds Database">
   <h1>Temporary Ponds Database</h1>
@@ -220,182 +147,34 @@
   </div>
 </div>
 
-<!-- 🔍 RESULTADOS -->
+<!-- RESULTADOS -->
 <div id="suggestions"></div>
 <div id="location-suggestions"></div>
 
-<!-- JS -->
+<!-- JS Leaflet -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
 
 <script>
-  const map = L.map('map', {
-    minZoom: 5,
-    maxZoom: 19
-  }).setView([40.4, -3.7], 7);
+const map = L.map('map', { minZoom: 5, maxZoom: 19 }).setView([40.4, -3.7], 7);
 
-  // -------------------- ESCALA --------------------
-  L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
+// Escala
+L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
 
-  // ---------------------- MAPAS BASE IGN ----------------------
-
-const pnoaActual = L.tileLayer(
-  "https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-  { maxZoom: 19, attribution: "© IGN – PNOA" }
-);
-
-const mapaRasterIGN = L.tileLayer(
-  "https://www.ign.es/wmts/mapa-raster?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-  { maxZoom: 19, attribution: "© IGN – Mapa Ráster (MTN)" }
-);
-
-const vuelo1956 = L.tileLayer.wms(
-  "https://www.ign.es/wms/pnoa-historico",
-  {
-    layers: "AMS_1956-1957",
-    format: "image/png",
-    transparent: true,
-    attribution: "© IGN – Americano Serie B, 1956-1957",
-    crs: L.CRS.EPSG4326
-  }
-);
-const primeraEdicionMTN50 = L.tileLayer(
-  "https://www.ign.es/wmts/primera-edicion-mtn?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=mtn50-edicion1&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-  { maxZoom: 19, attribution: "© IGN – MTN 50 Edición 1" }
-);
-
-const primeraEdicionMTN25 = L.tileLayer(
-  "https://www.ign.es/wmts/primera-edicion-mtn?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=mtn25-edicion1&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-  { maxZoom: 19, attribution: "© IGN – MTN 25 Edición 1" }
-);
-
-// Activar por defecto
+// Mapas base
+const pnoaActual = L.tileLayer("https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",{ maxZoom:19, attribution:"© IGN – PNOA"});
+const mapaRasterIGN = L.tileLayer("https://www.ign.es/wmts/mapa-raster?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",{ maxZoom:19, attribution:"© IGN – Mapa Ráster (MTN)"});
 pnoaActual.addTo(map);
 
 // Control de capas
 const baseMaps = {
   "🛰️ PNOA Actual": pnoaActual,
   "🗺️ National Topographic Map (current)": mapaRasterIGN,
-  "🗺️ National Topographic Map 1ºed (historic)": primeraEdicionMTN25,
-  "🗺️ National Topographic Map 2ºed (historic)": primeraEdicionMTN50,
-  "📸 American flight 1956/57": vuelo1956,
 };
-
 L.control.layers(baseMaps, null, { position: 'topright', collapsed: true }).addTo(map);
 
-  // ---------------------- MARCADORES + KML ----------------------
-  const markers = L.markerClusterGroup({ 
-    disableClusteringAtZoom: 12,
-    chunkedLoading: true,
-  });
-  const markerList = [];
-
-  const kmlLayer = omnivore.kml('temporary_ponds_database_V6_18_11_tras_match_hidro.kml')
-    .on('ready', function() {
-      kmlLayer.eachLayer(function(layer) {
-        if (layer.getLatLng) {
-          const props = layer.feature?.properties;
-          const name = props?.name?.trim() || "Sin nombre";
-
-          const marker = L.marker(layer.getLatLng());
-          let popupContent = `<h4>${name}</h4><ul>`;
-          for (let key in props) {
-            popupContent += `<li><b>${key}:</b> ${props[key]}</li>`;
-          }
-          popupContent += "</ul>";
-          marker.bindPopup(popupContent);
-
-          markerList.push({ name, nameLower: name.toLowerCase(), marker });
-          markers.addLayer(marker);
-        }
-      });
-
-      map.addLayer(markers);
-      map.fitBounds(markers.getBounds());
-    });
-
-  // -------------------- BUSCADOR DE LAGUNAS --------------------
-  const input = document.getElementById('search-input');
-  const suggestions = document.getElementById('suggestions');
-
-  input.addEventListener('input', function() {
-    const query = this.value.trim().toLowerCase();
-    suggestions.innerHTML = '';
-    if (!query) { suggestions.style.display = 'none'; return; }
-
-    const matches = markerList.filter(item => item.nameLower.includes(query)).slice(0, 5);
-
-    if (matches.length === 0) { suggestions.style.display = 'none'; return; }
-
-    matches.forEach(match => {
-      const div = document.createElement('div');
-      div.className = 'suggestion';
-      div.textContent = match.name;
-      div.addEventListener('click', () => {
-        map.setView(match.marker.getLatLng(), 14);
-        match.marker.openPopup();
-        suggestions.style.display = 'none';
-        input.value = match.name;
-      });
-      suggestions.appendChild(div);
-    });
-
-    suggestions.style.display = 'block';
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!document.getElementById('header').contains(e.target) && !suggestions.contains(e.target)) {
-      suggestions.style.display = 'none';
-    }
-  });
-
-  // -------------------- BUSCADOR DE LOCALIDADES --------------------
-  const locInput = document.getElementById('location-input');
-  const locSuggestions = document.getElementById('location-suggestions');
-  let locTimeout;
-
-  locInput.addEventListener('input', function() {
-    clearTimeout(locTimeout);
-    const query = this.value.trim();
-    locSuggestions.innerHTML = '';
-    if (!query) { locSuggestions.style.display = 'none'; return; }
-
-    locTimeout = setTimeout(() => {
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=es&limit=8&q=${encodeURIComponent(query)}`)
-        .then(res => res.json())
-        .then(results => {
-          locSuggestions.innerHTML = '';
-          if (results.length === 0) { locSuggestions.style.display = 'none'; return; }
-
-          results.forEach(result => {
-            const div = document.createElement('div');
-            div.className = 'suggestion';
-            div.textContent = result.display_name;
-            div.addEventListener('click', () => {
-              const lat = parseFloat(result.lat);
-              const lon = parseFloat(result.lon);
-              map.setView([lat, lon], 12);
-              L.marker([lat, lon])
-                .addTo(map)
-                .bindPopup(`<b>${result.display_name}</b>`)
-                .openPopup();
-              locSuggestions.style.display = 'none';
-              locInput.value = result.display_name;
-            });
-            locSuggestions.appendChild(div);
-          });
-          locSuggestions.style.display = 'block';
-        })
-    }, 400);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!document.getElementById('header').contains(e.target) && !locSuggestions.contains(e.target)) {
-      locSuggestions.style.display = 'none';
-    }
-  });
+// Aquí puedes añadir KML y buscadores tal como en tu código original
 </script>
-
 </body>
 </html>
