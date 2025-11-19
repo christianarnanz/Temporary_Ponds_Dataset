@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -141,7 +141,7 @@
       width: 90%;
     }
   }
-</style>
+  </style>
 </head>
 <body>
 
@@ -155,7 +155,6 @@
     <div id="search-box">
       <input type="text" id="search-input" placeholder="Search by name...">
     </div>
-    <!-- 🧭 NUEVO: Buscador de localidades -->
     <div id="location-box">
       <input type="text" id="location-input" placeholder="Search locality or municipality...">
     </div>
@@ -176,32 +175,58 @@
     minZoom: 5,
     maxZoom: 19
   }).setView([40.4, -3.7], 7);
-// --- 📏 ESCALA MÉTRICA ---
-L.control.scale({
-  metric: true,    // muestra metros/kilómetros
-  imperial: false, // desactiva millas/pies
-  position: 'bottomleft' // puedes cambiar a 'bottomright' si prefieres
-}).addTo(map);
 
-  const ortofotoIGN = L.tileLayer(
+  // -------------------- ESCALA --------------------
+  L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
+
+  // ---------------------- MAPAS BASE IGN ----------------------
+  const pnoaActual = L.tileLayer(
     "https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-    {
-      maxZoom: 19,
-      attribution: "© Instituto Geográfico Nacional (IGN) - PNOA"
-    }
-  ).addTo(map);
+    { maxZoom: 19, attribution: "© IGN – PNOA" }
+  );
 
+  const mtb50 = L.tileLayer(
+    "https://www.ign.es/wmts/mtb?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTB&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+    { maxZoom: 18, attribution: "© IGN – MTN50" }
+  );
+
+  const mtn25 = L.tileLayer(
+    "https://www.ign.es/wmts/mtn?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+    { maxZoom: 18, attribution: "© IGN – MTN25" }
+  );
+
+  const mtnRaster = L.tileLayer(
+    "https://www.ign.es/wmts/ign-base?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNBaseTodo&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+    { maxZoom: 18, attribution: "© IGN – Mapa Base" }
+  );
+
+  const vuelo1956 = L.tileLayer(
+    "https://www.ign.es/wmts/pnoa-historico?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=FOT_1956_57&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+    { maxZoom: 19, attribution: "© IGN – Vuelo Americano 1956/57" }
+  );
+
+  // Activar por defecto
+  pnoaActual.addTo(map);
+
+  const baseMaps = {
+    "🛰️ PNOA Actual": pnoaActual,
+    "📚 Mapa Base IGN": mtnRaster,
+    "🗺️ MTN25 (Topográfico 1:25.000)": mtn25,
+    "🗺️ MTN50 (Topográfico 1:50.000)": mtb50,
+    "📸 Vuelo Americano 1956/57": vuelo1956
+  };
+
+  L.control.layers(baseMaps, null, { position: 'topright', collapsed: true }).addTo(map);
+
+  // ---------------------- MARCADORES + KML ----------------------
   const markers = L.markerClusterGroup({ 
     disableClusteringAtZoom: 12,
     chunkedLoading: true,
   });
   const markerList = [];
 
-  // --- CARGAR KML ---
   const kmlLayer = omnivore.kml('temporary_ponds_database_V6_18_11_tras_match_hidro.kml')
     .on('ready', function() {
-      console.log("✅ KML cargado correctamente");
-
       kmlLayer.eachLayer(function(layer) {
         if (layer.getLatLng) {
           const props = layer.feature?.properties;
@@ -222,29 +247,20 @@ L.control.scale({
 
       map.addLayer(markers);
       map.fitBounds(markers.getBounds());
-    })
-    .on('error', e => console.error("❌ Error al cargar el KML:", e.error));
+    });
 
-  // --- 🔍 AUTOCOMPLETADO DE LAGUNAS ---
+  // -------------------- BUSCADOR DE LAGUNAS --------------------
   const input = document.getElementById('search-input');
   const suggestions = document.getElementById('suggestions');
 
   input.addEventListener('input', function() {
     const query = this.value.trim().toLowerCase();
     suggestions.innerHTML = '';
-    if (!query) {
-      suggestions.style.display = 'none';
-      return;
-    }
+    if (!query) { suggestions.style.display = 'none'; return; }
 
-    const matches = markerList
-      .filter(item => item.nameLower.includes(query))
-      .slice(0, 5);
+    const matches = markerList.filter(item => item.nameLower.includes(query)).slice(0, 5);
 
-    if (matches.length === 0) {
-      suggestions.style.display = 'none';
-      return;
-    }
+    if (matches.length === 0) { suggestions.style.display = 'none'; return; }
 
     matches.forEach(match => {
       const div = document.createElement('div');
@@ -262,14 +278,13 @@ L.control.scale({
     suggestions.style.display = 'block';
   });
 
-  // Ocultar sugerencias al hacer clic fuera
   document.addEventListener('click', (e) => {
     if (!document.getElementById('header').contains(e.target) && !suggestions.contains(e.target)) {
       suggestions.style.display = 'none';
     }
   });
 
-  // --- 🧭 BUSCADOR DE LOCALIDADES ---
+  // -------------------- BUSCADOR DE LOCALIDADES --------------------
   const locInput = document.getElementById('location-input');
   const locSuggestions = document.getElementById('location-suggestions');
   let locTimeout;
@@ -278,20 +293,14 @@ L.control.scale({
     clearTimeout(locTimeout);
     const query = this.value.trim();
     locSuggestions.innerHTML = '';
-    if (!query) {
-      locSuggestions.style.display = 'none';
-      return;
-    }
+    if (!query) { locSuggestions.style.display = 'none'; return; }
 
     locTimeout = setTimeout(() => {
       fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=es&limit=8&q=${encodeURIComponent(query)}`)
         .then(res => res.json())
         .then(results => {
           locSuggestions.innerHTML = '';
-          if (results.length === 0) {
-            locSuggestions.style.display = 'none';
-            return;
-          }
+          if (results.length === 0) { locSuggestions.style.display = 'none'; return; }
 
           results.forEach(result => {
             const div = document.createElement('div');
@@ -312,7 +321,6 @@ L.control.scale({
           });
           locSuggestions.style.display = 'block';
         })
-        .catch(err => console.error("Error al buscar localidad:", err));
     }, 400);
   });
 
