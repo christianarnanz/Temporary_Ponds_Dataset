@@ -109,7 +109,7 @@
     background: #f0f0f0;
   }
 
- /* --- ADAPTACIÓN A MÓVIL --- */
+/* --- ADAPTACIÓN A MÓVIL --- */
 @media (max-width: 800px) {
 
   /* HEADER */
@@ -133,7 +133,8 @@
   }
 
   /* BUSCADORES */
-  #search-box, #location-box {
+  #search-box,
+  #location-box {
     width: 90%;
     margin-top: 6px;
     padding: 4px 10px;
@@ -145,7 +146,8 @@
     z-index: 1200; /* encima del mapa */
   }
 
-  #search-input, #location-input {
+  #search-input,
+  #location-input {
     flex: 1;
     border: none;
     outline: none;
@@ -157,7 +159,8 @@
   }
 
   /* SUGERENCIAS */
-  #suggestions, #location-suggestions {
+  #suggestions,
+  #location-suggestions {
     position: absolute;
     right: 5%;
     width: 90%;
@@ -192,7 +195,7 @@
     z-index: 1100;
   }
 
-  /* Ajuste interno del toggle para que esté a la misma altura que el zoom */
+  /* Alinear el toggle del selector de capas exactamente con el zoom */
   .leaflet-control-layers {
     margin-top: 0 !important;
   }
