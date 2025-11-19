@@ -189,34 +189,28 @@ const pnoaActual = L.tileLayer(
   { maxZoom: 19, attribution: "© IGN – PNOA" }
 );
 
-const mtnRaster = L.tileLayer(
-  "https://www.ign.es/wmts/ign-base?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNBaseTodo&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
-  { maxZoom: 18, attribution: "© IGN – Mapa Base" }
-);
-
 const mapaRasterIGN = L.tileLayer(
   "https://www.ign.es/wmts/mapa-raster?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
   { maxZoom: 19, attribution: "© IGN – Mapa Ráster (MTN)" }
 );
 
-const mtb50 = L.tileLayer(
-  "https://www.ign.es/wmts/mtb?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTB&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-  { maxZoom: 18, attribution: "© IGN – MTN50" }
+const americano1956 = L.tileLayer.wms(
+  "https://www.ign.es/wms/pnoa-historico",
+  {
+    layers: "AMS_1956-1957",
+    format: "image/png",
+    transparent: true,
+    attribution: "© IGN – Americano Serie B, 1956-1957",
+    crs: L.CRS.EPSG4326
+  }
 );
-
-const mtn25 = L.tileLayer(
-  "https://www.ign.es/wmts/mtn?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=MTN&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-  { maxZoom: 18, attribution: "© IGN – MTN25" }
+const primeraEdicionMTN50 = L.tileLayer(
+  "https://www.ign.es/wmts/primera-edicion-mtn?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=mtn50-edicion1&STYLE=default&TILEMATRIXSET=EPSG:4326&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+  { maxZoom: 19, attribution: "© IGN – MTN 50 Edición 1" }
 );
-
-const vuelo1956 = L.tileLayer(
-  "https://www.ign.es/wmts/pnoa-historico?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=FOT_1956_57&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-  { maxZoom: 19, attribution: "© IGN – Vuelo Americano 1956/57" }
-);
-
-const primeraEdicionMTN = L.tileLayer(
-  "https://www.ign.es/wmts/primera-edicion-mtn?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=MTN50_ED50&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-  { maxZoom: 18, attribution: "© IGN – Primera edición MTN" }
+const primeraEdicionMTN25 = L.tileLayer(
+  "https://www.ign.es/wmts/primera-edicion-mtn?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=mtn25-edicion1&STYLE=default&TILEMATRIXSET=EPSG:4326&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+  { maxZoom: 19, attribution: "© IGN – MTN 25 Edición 1" }
 );
 
 // Activar por defecto
@@ -225,12 +219,10 @@ pnoaActual.addTo(map);
 // Control de capas
 const baseMaps = {
   "🛰️ PNOA Actual": pnoaActual,
-  "📚 Mapa Base IGN (vectorial)": mtnRaster,
-  "🗺️ Mapa Raster IGN (raster oficial)": mapaRasterIGN,
-  "🗺️ MTN25 (Topográfico 1:25.000)": mtn25,
-  "🗺️ MTN50 (Topográfico 1:50.000)": mtb50,
-  "📸 Vuelo Americano 1956/57": vuelo1956,
-  "🗺️ Primera Edición MTN (histórico)": primeraEdicionMTN
+  "🗺️ National Topographic Map (current)": mapaRasterIGN,
+  "🗺️ National Topographic Map 1ºed (historic)": primeraEdicionMTN25,
+  "🗺️ National Topographic Map 2ºed (historic)": primeraEdicionMTN50,
+  "📸 American flight 1956/57": vuelo1956,
 };
 
 L.control.layers(baseMaps, null, { position: 'topright', collapsed: true }).addTo(map);
