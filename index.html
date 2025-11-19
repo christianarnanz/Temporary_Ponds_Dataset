@@ -110,47 +110,88 @@
   }
 
   /* --- ADAPTACIÓN A MÓVIL --- */
-  @media (max-width: 800px) {
-    #header {
-      flex-direction: column;
-      align-items: center;
-      padding: 8px;
-    }
-
-    #header img {
-      height: 56px;
-      margin-bottom: 6px;
-    }
-
-    #header h1 {
-      font-size: 18px;
-      text-align: center;
-      margin: 4px 0;
-      white-space: normal;
-    }
-
-    #search-box, #location-box {
-      width: 90%;
-      margin-top: 6px;
-    }
-
-    #suggestions {
-      top: 120px;
-      right: 5%;
-      width: 90%;
-    }
-
-    #location-suggestions {
-      top: 180px;
-      right: 5%;
-      width: 90%;
-    }
+/* --- ADAPTACIÓN A MÓVIL --- */
+@media (max-width: 800px) {
+  /* HEADER */
+  #header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
   }
-  </style>
-</head>
-<body>
 
-<div id="map"></div>
+  #header img {
+    height: 56px;
+    margin-bottom: 6px;
+  }
+
+  #header h1 {
+    font-size: 18px;
+    text-align: center;
+    margin: 4px 0;
+    white-space: normal;
+  }
+
+  /* BUSCADORES */
+  #search-box, #location-box {
+    width: 90%;
+    margin-top: 6px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    background: white;
+    z-index: 1200; /* encima del mapa */
+  }
+
+  #search-input, #location-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    height: 28px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 10px;
+  }
+
+  /* SUGERENCIAS */
+  #suggestions, #location-suggestions {
+    position: absolute;
+    right: 5%;
+    width: 90%;
+    background: white;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: none;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1300; /* encima de todo */
+  }
+
+  #suggestions {
+    top: 120px; /* debajo del header y primer buscador */
+  }
+
+  #location-suggestions {
+    top: 180px; /* debajo del segundo buscador */
+  }
+
+  /* MAPA */
+  #map {
+    margin-top: 200px; /* espacio para header + buscadores */
+    height: calc(100vh - 200px);
+  }
+
+  /* CONTROLES DE LEAFLET */
+  .leaflet-top.leaflet-left,
+  .leaflet-top.leaflet-right {
+    top: 200px; /* mismo espacio que margin-top del mapa */
+    z-index: 1100; /* siempre encima del mapa */
+  }
+}
+
 
 <!-- 🔹 CABECERA -->
 <div id="header">
