@@ -109,15 +109,9 @@
     background: #f0f0f0;
   }
 
-  /* --- ADAPTACIÓN A MÓVIL --- */
-  @media (max-width: 800px) {
-    #header {
-      flex-direction: column;
-      align-items: center;
-      padding: 8px;
-    }
-/* --- ADAPTACIÓN A MÓVIL --- */
+ /* --- ADAPTACIÓN A MÓVIL --- */
 @media (max-width: 800px) {
+
   /* HEADER */
   #header {
     display: flex;
@@ -126,21 +120,11 @@
     padding: 8px;
   }
 
-    #header img {
-      height: 56px;
-      margin-bottom: 6px;
-    }
   #header img {
     height: 56px;
     margin-bottom: 6px;
   }
 
-    #header h1 {
-      font-size: 18px;
-      text-align: center;
-      margin: 4px 0;
-      white-space: normal;
-    }
   #header h1 {
     font-size: 18px;
     text-align: center;
@@ -148,10 +132,6 @@
     white-space: normal;
   }
 
-    #search-box, #location-box {
-      width: 90%;
-      margin-top: 6px;
-    }
   /* BUSCADORES */
   #search-box, #location-box {
     width: 90%;
@@ -165,11 +145,6 @@
     z-index: 1200; /* encima del mapa */
   }
 
-    #suggestions {
-      top: 120px;
-      right: 5%;
-      width: 90%;
-    }
   #search-input, #location-input {
     flex: 1;
     border: none;
@@ -181,11 +156,6 @@
     padding: 0 10px;
   }
 
-    #location-suggestions {
-      top: 180px;
-      right: 5%;
-      width: 90%;
-    }
   /* SUGERENCIAS */
   #suggestions, #location-suggestions {
     position: absolute;
@@ -200,32 +170,38 @@
     z-index: 1300; /* encima de todo */
   }
 
-  #suggestions {
-    top: 120px; /* debajo del header y primer buscador */
-  }
-
-  #location-suggestions {
-    top: 180px; /* debajo del segundo buscador */
-  }
+  #suggestions { top: 120px; }
+  #location-suggestions { top: 180px; }
 
   /* MAPA */
   #map {
     margin-top: 200px; /* espacio para header + buscadores */
     height: calc(100vh - 200px);
   }
-  </style>
-</head>
-<body>
 
-<div id="map"></div>
   /* CONTROLES DE LEAFLET */
-  .leaflet-top.leaflet-left,
+  /* Zoom (+/-) */
+  .leaflet-top.leaflet-left {
+    top: 200px;
+    z-index: 1100;
+  }
+
+  /* Selector de capas (toggle) */
   .leaflet-top.leaflet-right {
-    top: 200px; /* mismo espacio que margin-top del mapa */
-    z-index: 1100; /* siempre encima del mapa */
+    top: 200px;
+    z-index: 1100;
+  }
+
+  /* Ajuste interno del toggle para que esté a la misma altura que el zoom */
+  .leaflet-control-layers {
+    margin-top: 0 !important;
+  }
+
+  .leaflet-control-layers-toggle {
+    margin-top: 0 !important;
+    top: 0 !important;
   }
 }
-
 
 <!-- 🔹 CABECERA -->
 <div id="header">
