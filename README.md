@@ -61,9 +61,3 @@ The repository includes the following files and resources:
 ## Citation
 If you use this dataset, please cite the associated data paper:
 > Arnanz et al. (2026). *Temporary Ponds of Peninsular Spain (TemPoPS): An integrative dataset supporting research and conservation of an endangered habitat*. Journal / Repository. DOI.
-
-
-
-
-
-> Arnanz et al. (YEAR). *Temporary Ponds of Peninsular Spain (TemPoPS): An integrative dataset supporting research and conservation of an endangered habitat*. Journal / Repository. DOI.
