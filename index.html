@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Temporary Ponds Database - Visor</title>
+  <title>Temporary Ponds Dataset - Visor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <!-- FAVICON - Añade esta línea -->
 <link rel="icon" type="image/png" href="https://christianarnanz.github.io/Temporary_Ponds_Database/logo.png">
@@ -28,6 +28,10 @@
 
 .leaflet-top.leaflet-left {
   margin-top: 110px;  /* Añadido: mismo ajuste para zoom */
+}
+  .leaflet-popup-content {
+  max-height: 200px; /* Altura máxima del texto */
+  overflow-y: auto;  /* Si hay más texto, sale barra de scroll */
 }
   /* --- CABECERA SUPERIOR --- */
   #header {
@@ -179,7 +183,7 @@
 <!-- 🔹 CABECERA -->
 <div id="header">
   <img src="logo.png" alt="Temporary Ponds Dataset">
-  <h1>Temporary Ponds Database</h1>
+  <h1>Temporary Ponds Dataset</h1>
   <div style="position: relative;"> <div id="search-box">
       <input type="text" id="search-input" placeholder="Search pond by name...">
       <div id="suggestions"></div> 
