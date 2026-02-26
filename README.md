@@ -12,10 +12,10 @@ The contents are intended to ensure transparency, reproducibility, and reuse of 
 The repository includes the following files and resources:
 
 ### Core dataset
-- **`Temporary_Ponds_of_Peninsular_Spain_V0.csv`**  
+- **`Temporary_Ponds_of_Peninsular_Spain_V1.csv`**  
   Main dataset in CSV format (comma-separated, `.` as decimal separator).
 
-- **`Temporary_Ponds_of_Peninsular_Spain_V0.kml`**  
+- **`Temporary_Ponds_of_Peninsular_Spain_V1.kml`**  
   Spatial representation of the main dataset in KML format for direct visualization in GIS.
 
 ---
@@ -23,9 +23,6 @@ The repository includes the following files and resources:
 ### Metadata
 - **`Temporary_Ponds_of_Peninsular_Spain_V0_eml.xml`**  
   Full metadata record in Ecological Metadata Language (EML) format.
-
-- **`TemPoPS_Metadata_Summary.pdf`**  
-  Human-readable summary of the metadata, derived from the EML file.
 
 ---
 
@@ -36,13 +33,13 @@ The repository includes the following files and resources:
 ---
 
 ### Spatial data
-- **`Associated_polygons_Temporary_ponds_dataset_V0.gpkg`**  
+- **`Associated_polygons_Temporary_ponds_dataset_V1`**  
   GeoPackage containing polygons derived from polygon-based sources. Individual ponds in the main dataset are linked to these polygons via identifier field "ID_POLYGON".
 
 ---
 
 ### Code and visualization
-- **`Arnanz_et_al_Temporary_ponds_dataset.R`**  
+- **`Temporary Ponds of Peninsular Spain.R`**  
   R script illustrating the workflow used to compile, harmonize, and document the dataset.
 
 - **`index.html`**  
@@ -54,7 +51,7 @@ The repository includes the following files and resources:
 ## Notes on data use
 - Coordinates are provided in decimal degrees (EPSG:4326), using a dot (`.`) as the decimal separator.
 - The CSV file follows international formatting standards and should be imported explicitly when using spreadsheet software.
-- The EML metadata file provides the authoritative description of variables, sources, and data structure.
+- The metadata file provides the authoritative description of variables, sources, and data structure.
 
 ---
 
