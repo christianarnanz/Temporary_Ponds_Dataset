@@ -30,24 +30,24 @@ The repository includes the following files and resources:
 ---
 
 ### Source documentation
-- **`MS_References_temporary_ponds_database.csv`**  
-  Detailed list of all information sources used to construct the database, including download links (when available) and assigned source categories, as described in the Methods section of the data paper.
+- **`MS_References_temporary_ponds_dataset.csv`**  
+  Detailed list of all information sources used to construct the dataset, including download links (when available) and assigned source categories, as described in the Methods section of the data paper.
 
 ---
 
 ### Spatial data
-- **`Associated_polygons_Temporary_ponds_database_V0.gpkg`**  
+- **`Associated_polygons_Temporary_ponds_dataset_V0.gpkg`**  
   GeoPackage containing polygons derived from polygon-based sources. Individual ponds in the main dataset are linked to these polygons via identifier field "ID_POLYGON".
 
 ---
 
 ### Code and visualization
-- **`Arnanz_et_al_Temporary_ponds_database.R`**  
+- **`Arnanz_et_al_Temporary_ponds_dataset.R`**  
   R script illustrating the workflow used to compile, harmonize, and document the dataset.
 
 - **`index.html`**  
   Code supporting the online interactive viewer available at:  
-  https://christianarnanz.github.io/Temporary_Ponds_Database/
+  https://christianarnanz.github.io/Temporary_Ponds_dataset/
 
 ---
 
